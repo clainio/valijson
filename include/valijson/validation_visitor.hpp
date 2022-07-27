@@ -581,18 +581,21 @@ public:
         }
 
         const double minimum = constraint.getMinimum();
+        const std::string string_value = std::to_string(m_target.asDouble());
 
         if (constraint.getExclusiveMinimum()) {
             if (m_target.asDouble() <= minimum) {
                 if (m_results) {
-                    m_results->pushError(m_context, "Expected number greater than " + std::to_string(minimum));
+                    m_results->pushError(m_context, "Expected number greater than " + std::to_string(minimum)
+                      + std::string{ " received " + string_value });
                 }
 
                 return false;
             }
         } else if (m_target.asDouble() < minimum) {
             if (m_results) {
-                m_results->pushError(m_context, "Expected number greater than or equal to " + std::to_string(minimum));
+                m_results->pushError(m_context, "Expected number greater than or equal to " + std::to_string(minimum)
+                    + std::string{ " received " + string_value });
             }
 
             return false;
@@ -1121,12 +1124,15 @@ public:
         // Check schema-based types
         {
             unsigned int numValidated = 0;
+            const std::string string_value = std::to_string(m_target.asDouble());
+
             constraint.applyToSchemaTypes(
                     ValidateSubschemas(m_target, m_context, false, true, *this, nullptr, &numValidated, nullptr));
             if (numValidated > 0) {
                 return true;
             } else if (m_results) {
-                m_results->pushError(m_context, "Value type not permitted by 'type' constraint.");
+                m_results->pushError(m_context, "Value type not permitted by 'type' constraint."
+                    + std::string{ " Received " + string_value });
             }
         }
 
